@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Pokémon Battlegame</title>
+    <style>
+        /*Vende egen pkmn speilvendt så de ser mot motstanderen*/
+        .yourPKMN{
+            -webkit-transform: scaleX(-1);
+            transform: scaleX(-1);
+        }
+
+        /*Motstander skal skli inn fra høyre*/
+
+
+        /*Namestyle*/
+
+        /*HP bars*/
+        .healthBar{
+            border: 1px solid black;
+            width: 100px;
+            height: 17px;
+           
+        }
+
+        .healthBarColor{
+            background-color: green;
+            width: 100px;
+        }
+    
+        
+.bar {
+  position: relative;
+  background: #1da598;
+  height: 15px;
+  width: 100px;
+  border: 1px solid #333;
+}
+
+.barFiller {
+  width: 70%;
+  height: 100%;
+  transition: width 0.2s ease-in;
+  background: red;
+}
+
+
+        /*AttackButtonStyle*/
+        .attackButton{
+            height: 30px;
+            width: 70px;
+            border: 1px solid black;
+            background-color: lightblue;
+            border-radius: 10%;
+           font-size: 1vw;
+           margin: 0.3vw;
+           float:left;
+        }
+
+        /*CatchButtonStyle*/
+
+
+        /*Battletext log*/
+
+
+    </style>
+</head>
+<body>
+    <div id="app"></div>
+
+
+    <script>
+
+        const app = document.getElementById('app');
+
+        let wildPokémon = [
+            {
+                name: "Abra",
+                maxHp: 50,
+                currentHp: 50,
+                hpBar: 100,
+                attacks: [{name:"Teleport", damage:0}, {name:"psyshock", damage: 15}],
+                sprite: "./img/abra.gif"
+            },
+            {
+                name: "Bulbasaur",
+                maxHp: 90,
+                currentHp: 90,
+                hpBar: 100,
+                attacks: [{name:"Vine Whip", damage: 15}, {name:"Tackle", damage:10 }],
+                sprite: "./img/bulbasaur.gif"
+            },
+            {
+                name: "Caterpie",
+                maxHp: 40,
+                currentHp: 40,
+                hpBar: 100,
+                attacks: [{name:"stringshot", damage: 0}, {name: "tackle", damage:10}],
+                sprite: "./img/caterpie.gif"
+            },
+        ];
+        let wildPokemonIndex = -1;
+        let activePokemonIndex = 0;
+        let activeAttack = null;
+        let wildAttack = null;
+        let yourPokémon = [
+            {
+                name: "Rockachu",
+                maxHp: 150,
+                currentHp: 150,
+                hpBar: 100,
+                attacks: [
+                    {name: "Thundershock", damage: 35}, 
+                    {name: "Guitarsmash", damage: 50},
+                    {name: "Strangle", damage: 100},
+                    {name: "Quick Attack", damage: 15}
+                ],
+                sprite: "img/pikachu-rockstar.gif"
+            }
+        ];
+
+
+
+
+        skjermbilde()
+        function skjermbilde(){
+          
+            let html = ` <button onclick="getRandomEncounter()">Look for Pokémon!</button> <br>`
+            if(wildPokemonIndex != -1){
+                html += `<div style="float:right">
+                A wild ${wildPokémon[wildPokemonIndex].name} appeared! <br> 
+                HP: <div class="healthBar"> <div class="healthBarColor" style="height:17px;width:${wildPokémon[wildPokemonIndex].hpBar}">${wildPokémon[wildPokemonIndex].currentHp}/${wildPokémon[wildPokemonIndex].maxHp}  </div></div><br>
+                <img src="${wildPokémon[wildPokemonIndex].sprite}">
+                </div>
+                `;
+            }
+          
+
+            html += `${yourPokémon[activePokemonIndex].name} 
+            <br> 
+            
+            HP: <div class="healthBar"> <div class="healthBarColor" style="height:17px;width:${yourPokémon[activePokemonIndex].hpBar}%"> ${yourPokémon[activePokemonIndex].currentHp}/ ${yourPokémon[activePokemonIndex].maxHp} </div> </div> 
+            
+            <br> 
+            <img class="yourPKMN" src="${yourPokémon[activePokemonIndex].sprite}">
+            <br>
+
+            `;
+            yourPokémon[activePokemonIndex].attacks.forEach((attack, index) => {
+                html += `<button class="attackButton" style=" ${index == 2 || index == 4 ?  'clear:left' : ''}" onclick="doAttack(${index})"> ${attack.name} </button>`;
+            });
+
+            if(activeAttack != null){
+                html += `<br><div> Your ${yourPokémon[activePokemonIndex].name} attacked with ${activeAttack.name} for ${activeAttack.damage} damage! </div>`;
+            }
+            if(wildAttack != null){
+                html += `<br><div>The wild ${wildPokémon[wildPokemonIndex].name} attacked with ${wildAttack.name} for ${wildAttack.damage}!</div>`;
+            }
+
+            app.innerHTML = html;
+        }
+
+        // dele opp i to underviews - et for egen pkmn ett for wild pkmn
+
+
+        function doAttack(index){
+            let attack = yourPokémon[activePokemonIndex].attacks[index];
+             activeAttack = attack;
+             wildPokémon[wildPokemonIndex].currentHp = wildPokémon[wildPokemonIndex].currentHp - yourPokémon[activePokemonIndex].attacks[index].damage;
+
+             wildPokemonAttack()
+        }
+
+        
+        function getRandomEncounter(){
+            wildPokemonIndex = Math.floor(Math.random()* wildPokémon.length);
+            skjermbilde();
+        }
+
+        function wildPokemonAttack(){
+            let aviableAttacks = wildPokémon[wildPokemonIndex].attacks;
+            let randomAttackIndex = Math.floor(Math.random()* aviableAttacks.length);
+            wildAttack = aviableAttacks[randomAttackIndex];
+
+            yourPokémon[activePokemonIndex].currentHp = yourPokémon[activePokemonIndex].currentHp - wildAttack.damage;
+            
+            calculateBarPercentage();
+
+            skjermbilde( wildPokémon[wildPokemonIndex].currentHp, wildAttack);
+        }
+
+        function calculateBarPercentage(fullHP, attackPower){
+            //  wildPokemonIndex
+            //attackpower - hp -- hvor mange prosent av hele?
+            console.log( wildPokémon[wildPokemonIndex].maxHp, " hp & attack ",  wildAttack.attackPower)
+            //((Tall2 - Tall1) x 100) / Tall1
+            console.log( ((fullHP - attackPower) * 100) / attackPower,  " newbar %")
+
+           // return (((fullHP - attackPower) * 100) / attackPower);
+
+
+
+        }
+
+
+        function catchPokemon(){
+
+        }
+
+
+    </script>
+</body>
+</html>
