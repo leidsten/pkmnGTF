@@ -10,6 +10,9 @@
         .yourPKMN{
             -webkit-transform: scaleX(-1);
             transform: scaleX(-1);
+           
+        }
+        .enter{
             animation: 2s  slidein;
         }
 
@@ -134,6 +137,7 @@
                 sprite: "img/pikachu-rockstar.gif"
             }
         ];
+        let firstRound = true;
 
 
 
@@ -158,7 +162,7 @@
             HP: <div class="healthBar"> <div class="healthBarColor" style="height:17px;width:${yourPokémon[activePokemonIndex].hpBar}%"> ${yourPokémon[activePokemonIndex].currentHp}/ ${yourPokémon[activePokemonIndex].maxHp} </div> </div>
 
             <br>
-            <img class="yourPKMN" src="${yourPokémon[activePokemonIndex].sprite}">
+            <img class="${firstRound ? "yourPKMN enter" : "yourPKMN"}" src="${yourPokémon[activePokemonIndex].sprite}">
             <br>
 
             `;
@@ -174,9 +178,10 @@
             }
 
             app.innerHTML = html;
+            firstRound = false;
         }
 
-        // dele opp i to underviews - et for egen pkmn ett for wild pkmn
+        // dele opp i to underviews - et for egen pkmn ett for wild pkmn?
 
 
         function doAttack(index){
@@ -184,7 +189,7 @@
              activeAttack = attack;
              wildPokémon[wildPokemonIndex].currentHp = wildPokémon[wildPokemonIndex].currentHp - yourPokémon[activePokemonIndex].attacks[index].damage;
 
-             wildPokemonAttack()
+             wildPokemonAttack();
         }
 
 
@@ -212,10 +217,7 @@
             else return false;
         }
 
-        function changeActivePokemon(){
-
-        }
-
+       
         function calculateBarPercentage(){
             //currentHP av MAX HP %
             let yourCurrentHPpercent = yourPokémon[activePokemonIndex].currentHp * 100 / yourPokémon[activePokemonIndex].maxHp;
@@ -230,6 +232,11 @@
         function catchPokemon(){
 
         }
+
+        function changeActivePokemon(){
+
+        }
+
 
 
     </script>
