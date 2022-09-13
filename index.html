@@ -12,23 +12,31 @@
             transform: scaleX(-1);
            
         }
-        .enter{
-            animation: 2s  slidein;
+        .enterLeft{
+            animation: 2s  slideinLeft;
         }
 
-        /*Motstander skal skli inn fra høyre*/
-        .slide {
-            animation: 2s  slidein;
-}
-@keyframes slidein {
+      
+        .enterRight {
+            animation: 2s  slideinRight;
+        }
+
+@keyframes slideinLeft {
   from {
-    margin-left: 100%;
-    width: 300%;
+    margin-left: -50%;
   }
 
   to {
     margin-left: 0%;
-    width: 100%;
+  }
+}
+@keyframes slideinRight {
+  from {
+    margin-left: 150%;
+  }
+
+  to {
+    margin-left: 0%;
   }
 }
 
@@ -138,6 +146,7 @@
             }
         ];
         let firstRound = true;
+        let firstRoundWild = true;
 
 
 
@@ -150,7 +159,7 @@
                 html += `<div style="float:right">
                 A wild ${wildPokémon[wildPokemonIndex].name} appeared! <br>
                 HP: <div class="healthBar"> <div class="healthBarColor" style="height:17px;width:${wildPokémon[wildPokemonIndex].hpBar}%">${wildPokémon[wildPokemonIndex].currentHp}/${wildPokémon[wildPokemonIndex].maxHp}  </div></div><br>
-                <img src="${wildPokémon[wildPokemonIndex].sprite}">
+                <img class="${firstRoundWild ? "enterRight" : ""}" src="${wildPokémon[wildPokemonIndex].sprite}">
                 </div>
                 `;
             }
@@ -162,7 +171,7 @@
             HP: <div class="healthBar"> <div class="healthBarColor" style="height:17px;width:${yourPokémon[activePokemonIndex].hpBar}%"> ${yourPokémon[activePokemonIndex].currentHp}/ ${yourPokémon[activePokemonIndex].maxHp} </div> </div>
 
             <br>
-            <img class="${firstRound ? "yourPKMN enter" : "yourPKMN"}" src="${yourPokémon[activePokemonIndex].sprite}">
+            <img class="${firstRound ? "yourPKMN enterLeft" : "yourPKMN"}" src="${yourPokémon[activePokemonIndex].sprite}">
             <br>
 
             `;
@@ -176,15 +185,16 @@
             if(wildAttack != null){
                 html += `<br><div>The wild ${wildPokémon[wildPokemonIndex].name} attacked with ${wildAttack.name} for ${wildAttack.damage}!</div>`;
             }
-
-            app.innerHTML = html;
             firstRound = false;
+            app.innerHTML = html;
+           
         }
 
         // dele opp i to underviews - et for egen pkmn ett for wild pkmn?
 
 
         function doAttack(index){
+           
             let attack = yourPokémon[activePokemonIndex].attacks[index];
              activeAttack = attack;
              wildPokémon[wildPokemonIndex].currentHp = wildPokémon[wildPokemonIndex].currentHp - yourPokémon[activePokemonIndex].attacks[index].damage;
@@ -196,6 +206,7 @@
         function getRandomEncounter(){
             wildPokemonIndex = Math.floor(Math.random()* wildPokémon.length);
             skjermbilde();
+            firstRoundWild = false;
         }
 
         function wildPokemonAttack(){
@@ -212,6 +223,7 @@
         //Neste skritt - denne blir ikke kalt noe sted, bare skrevet logikken
         function checkIfFainted(pokemonHP, attackPower){
             if((pokemonHP - attackPower) <= 0){
+                //sett gjeldende pkmn HP til 0 - ikke gå under 0
                 return true;
             }
             else return false;
